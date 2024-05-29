@@ -3,18 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 
-public class databaseManager
+public class DatabaseManager
 {
     private string connectionString = "Data Source=medications.db;Version=3;";
 
-    public databaseManager()
+    public DatabaseManager()
     {
         CreateDatabase();
     }
 
     private void CreateDatabase()
     {
-        using (var connection = new SQLiteConnection(connectionString))
+        using (SQLiteConnection connection = new(connectionString))
         {
             connection.Open();
             string createMedicationsTable = @"
@@ -22,20 +22,24 @@ public class databaseManager
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT,
                     Dosage TEXT,
-                    Frequency INTEGER,
-                    Times TEXT
+                    Times TEXT,
+                    Regular BOOLEAN
                 )";
             string createLogsTable = @"
                 CREATE TABLE IF NOT EXISTS Logs (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     MedicationId INTEGER,
+                    Name TEXT,
+                    Dosage TEXT,
                     TakenAt DATETIME
                 )";
-            using (var command = new SQLiteCommand(createMedicationsTable, connection))
+
+            using (SQLiteCommand command = new(createMedicationsTable, connection))
             {
                 command.ExecuteNonQuery();
             }
-            using (var command = new SQLiteCommand(createLogsTable, connection))
+
+            using (SQLiteCommand command = new(createLogsTable, connection))
             {
                 command.ExecuteNonQuery();
             }
@@ -44,16 +48,16 @@ public class databaseManager
 
     public void AddMedication(Medication medication)
     {
-        using (var connection = new SQLiteConnection(connectionString))
+        using (SQLiteConnection connection = new(connectionString))
         {
             connection.Open();
-            string query = "INSERT INTO Medications (Name, Dosage, Frequency, Times) VALUES (@Name, @Dosage, @Frequency, @Times)";
-            using (var command = new SQLiteCommand(query, connection))
+            string query = "INSERT INTO Medications (Name, Dosage, Times, Regular) VALUES (@Name, @Dosage, @Times, @Regular)";
+            using (SQLiteCommand command = new(query, connection))
             {
                 command.Parameters.AddWithValue("@Name", medication.Name);
                 command.Parameters.AddWithValue("@Dosage", medication.Dosage);
-                command.Parameters.AddWithValue("@Frequency", medication.Frequency);
                 command.Parameters.AddWithValue("@Times", string.Join(",", medication.Times));
+                command.Parameters.AddWithValue("@Regular", medication.Regular);
                 command.ExecuteNonQuery();
             }
         }
@@ -61,22 +65,23 @@ public class databaseManager
 
     public List<Medication> GetMedications()
     {
-        List<Medication> medications = new List<Medication>();
-        using (var connection = new SQLiteConnection(connectionString))
+        List<Medication> medications = new();
+
+        using (SQLiteConnection connection = new(connectionString))
         {
             connection.Open();
             string query = "SELECT * FROM Medications";
-            using (var command = new SQLiteCommand(query, connection))
+            using (SQLiteCommand command = new(query, connection))
             {
-                using (var reader = command.ExecuteReader())
+                using (SQLiteDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        Medication medication = new Medication(
-                            reader.GetString(1), // Name
-                            reader.GetString(2), // Dosage
-                            reader.GetInt32(3),  // Frequency
-                            reader.GetString(4).Split(',').Select(t => DateTime.Parse(t)).ToList() // Times
+                        Medication medication = new(
+                            reader.GetString(1),//Namn
+                            reader.GetString(2),//Dos
+                            reader.GetString(3).Split(',').Select(t => DateTime.Parse(t)).ToList(), //Tider
+                            reader.GetBoolean(4) // Regular
                         )
                         {
                             Id = reader.GetInt32(0) // Id
@@ -89,18 +94,62 @@ public class databaseManager
         return medications;
     }
 
-    public void LogMedication(int medicationId)
+    public void LogMedication(int medicationId, string name, string dosage)
     {
-        using (var connection = new SQLiteConnection(connectionString))
+        using (SQLiteConnection connection = new(connectionString))
         {
             connection.Open();
-            string query = "INSERT INTO Logs (MedicationId, TakenAt) VALUES (@MedicationId, @TakenAt)";
-            using (var command = new SQLiteCommand(query, connection))
+            string query = "INSERT INTO Logs (MedicationId, Name, Dosage, TakenAt) VALUES (@MedicationId, @Name, @Dosage, @TakenAt)";
+            using (SQLiteCommand command = new(query, connection))
             {
                 command.Parameters.AddWithValue("@MedicationId", medicationId);
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Dosage", dosage);
                 command.Parameters.AddWithValue("@TakenAt", DateTime.Now);
                 command.ExecuteNonQuery();
             }
         }
+    }
+
+    public void DeleteMedication(int medicationId)
+    {
+        using (SQLiteConnection connection = new(connectionString))
+        {
+            connection.Open();
+            string query = "DELETE FROM Medications WHERE Id = @Id";
+            using (SQLiteCommand command = new(query, connection))
+            {
+                command.Parameters.AddWithValue("@Id", medicationId);
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
+    public List<LoggedMedication> GetLogs()
+    {
+        List<LoggedMedication> loggedMedications = new();
+
+        using (SQLiteConnection connection = new(connectionString))
+        {
+            connection.Open();
+            string query = "SELECT * FROM Logs";
+            using (SQLiteCommand command = new(query, connection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        LoggedMedication loggedMedication = new(
+                            reader.GetInt32(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            reader.GetDateTime(4)
+                        );
+                        loggedMedications.Add(loggedMedication);
+                    }
+                }
+            }
+        }
+        return loggedMedications;
     }
 }

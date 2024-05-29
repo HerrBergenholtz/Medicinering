@@ -14,10 +14,10 @@ namespace Medicinering
 {
     public partial class Form2 : Form
     {
-        private databaseManager databaseManager;
+        private DatabaseManager databaseManager;
         private List<DateTime> times;
 
-        public Form2(databaseManager databaseManager)
+        public Form2(DatabaseManager databaseManager)
         {
             InitializeComponent();
             this.databaseManager = databaseManager;
@@ -27,12 +27,47 @@ namespace Medicinering
         private void addTime_Click(object sender, EventArgs e)
         {
             times.Add(dateTimePicker1.Value);
-            timeList.Items.Add(dateTimePicker1.Value.ToString("HH:mm"));
+
+            if (dates.Checked)
+            {
+                timeList.Items.Add(dateTimePicker1.Value.ToString("HH:mm"));
+            }
+            else
+            {
+                timeList.Items.Add(dateTimePicker1.Value.ToString("MM/dd/yyyy HH:mm"));
+            }
+        }
+
+        private void dates_CheckedChanged(object sender, EventArgs e)
+        {
+            if (dates.Checked)
+            {
+                dateTimePicker1.Format = DateTimePickerFormat.Time;
+            }
+            else
+            {
+                dateTimePicker1.Format = DateTimePickerFormat.Long;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Medication newMedication = new Medication(name.Text, dosage.Text, (int)frequency.Value, times);
+            Medication newMedication;
+
+            if (name.Text == "" || dosage.Text == "" || timeList.Items == null)
+            {
+                MessageBox.Show("Vänligen fyll i alla fält", "Fel uppstod", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                return;
+            }
+
+            if (dates.Checked)
+            {
+                newMedication = new(name.Text, dosage.Text, times, true);
+            }
+            else
+            {
+                newMedication = new(name.Text, dosage.Text, times, false);
+            }
 
             databaseManager.AddMedication(newMedication);
 
