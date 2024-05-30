@@ -28,26 +28,7 @@ namespace Medicinering
         {
             times.Add(dateTimePicker1.Value);
 
-            if (dates.Checked)
-            {
-                timeList.Items.Add(dateTimePicker1.Value.ToString("HH:mm"));
-            }
-            else
-            {
-                timeList.Items.Add(dateTimePicker1.Value.ToString("MM/dd/yyyy HH:mm"));
-            }
-        }
-
-        private void dates_CheckedChanged(object sender, EventArgs e)
-        {
-            if (dates.Checked)
-            {
-                dateTimePicker1.Format = DateTimePickerFormat.Time;
-            }
-            else
-            {
-                dateTimePicker1.Format = DateTimePickerFormat.Long;
-            }
+            timeList.Items.Add(dateTimePicker1.Value.ToString("HH:mm"));
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -60,14 +41,7 @@ namespace Medicinering
                 return;
             }
 
-            if (dates.Checked)
-            {
-                newMedication = new(name.Text, dosage.Text, times, true);
-            }
-            else
-            {
-                newMedication = new(name.Text, dosage.Text, times, false);
-            }
+            newMedication = new(name.Text, dosage.Text, times);
 
             databaseManager.AddMedication(newMedication);
 

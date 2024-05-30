@@ -38,7 +38,6 @@
             addTime = new Button();
             timeList = new ListBox();
             label5 = new Label();
-            dates = new CheckBox();
             label3 = new Label();
             SuspendLayout();
             // 
@@ -66,7 +65,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label4.Location = new Point(277, 266);
+            label4.Location = new Point(277, 220);
             label4.Name = "label4";
             label4.Size = new Size(39, 28);
             label4.TabIndex = 3;
@@ -93,28 +92,29 @@
             // addMedication
             // 
             addMedication.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            addMedication.Location = new Point(308, 487);
+            addMedication.Location = new Point(322, 440);
             addMedication.Margin = new Padding(3, 4, 3, 4);
             addMedication.Name = "addMedication";
             addMedication.Size = new Size(265, 47);
             addMedication.TabIndex = 8;
-            addMedication.Text = "Lägg till";
+            addMedication.Text = "Lägg till medicin";
             addMedication.UseVisualStyleBackColor = true;
             addMedication.Click += button1_Click;
             // 
             // dateTimePicker1
             // 
             dateTimePicker1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            dateTimePicker1.Location = new Point(322, 267);
+            dateTimePicker1.Format = DateTimePickerFormat.Time;
+            dateTimePicker1.Location = new Point(322, 220);
             dateTimePicker1.Margin = new Padding(3, 4, 3, 4);
             dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(322, 34);
+            dateTimePicker1.Size = new Size(196, 34);
             dateTimePicker1.TabIndex = 10;
             // 
             // addTime
             // 
             addTime.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            addTime.Location = new Point(650, 266);
+            addTime.Location = new Point(547, 220);
             addTime.Margin = new Padding(3, 4, 3, 4);
             addTime.Name = "addTime";
             addTime.Size = new Size(97, 38);
@@ -128,7 +128,7 @@
             timeList.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             timeList.FormattingEnabled = true;
             timeList.ItemHeight = 28;
-            timeList.Location = new Point(355, 347);
+            timeList.Location = new Point(322, 301);
             timeList.Margin = new Padding(3, 4, 3, 4);
             timeList.Name = "timeList";
             timeList.Size = new Size(251, 116);
@@ -138,23 +138,11 @@
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label5.Location = new Point(236, 347);
+            label5.Location = new Point(203, 301);
             label5.Name = "label5";
             label5.Size = new Size(113, 28);
             label5.TabIndex = 13;
             label5.Text = "Valda Tider:";
-            // 
-            // dates
-            // 
-            dates.AutoSize = true;
-            dates.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            dates.Location = new Point(355, 214);
-            dates.Name = "dates";
-            dates.Size = new Size(212, 32);
-            dates.TabIndex = 14;
-            dates.Text = "Ta medicin varje dag";
-            dates.UseVisualStyleBackColor = true;
-            dates.CheckedChanged += dates_CheckedChanged;
             // 
             // label3
             // 
@@ -170,9 +158,8 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(886, 557);
+            ClientSize = new Size(886, 511);
             Controls.Add(label3);
-            Controls.Add(dates);
             Controls.Add(label5);
             Controls.Add(timeList);
             Controls.Add(addTime);
@@ -202,7 +189,6 @@
         private Button addTime;
         private ListBox timeList;
         private Label label5;
-        private CheckBox dates;
         private Label label3;
     }
 }

@@ -8,30 +8,17 @@ namespace Medicinering
 {
     public class Medication
     {
-        public Medication(string name, string dosage, List<DateTime> times, bool regular) 
+        public Medication(string name, string dosage, List<DateTime> times) 
         {
             Name = name;
             Dosage = dosage;
             Times = times;
-            Regular = regular;
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
         public string Dosage { get; set; }
         public List<DateTime> Times { get; set; }
-        public bool Regular {  get; set; }
-
-        public bool TakeNow()
-        {
-            DateTime now = DateTime.Now;
-
-            if (Times.Any(t => t.Hour == now.Hour && t.Minute == now.Minute))
-            {
-                return true;
-            }
-            else return false;
-        }
 
         public void LogTaken(DatabaseManager databaseManager)
         {

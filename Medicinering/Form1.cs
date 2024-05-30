@@ -16,20 +16,14 @@ namespace Medicinering
             databaseManager = new();
             lastAlertTime = new Dictionary<int, DateTime>();
 
-            LoadMedications();
             InitializeTimer();
             UpdateMedicationList();
-        }
-
-        private void LoadMedications()
-        {
-            medications = databaseManager.GetMedications();
         }
 
         private void InitializeTimer()
         {
             timer = new();
-            timer.Interval = 10000;
+            timer.Interval = 20000;
             timer.Tick += TimerTick;
             timer.Start();
         }
@@ -53,14 +47,13 @@ namespace Medicinering
 
         private void CheckMedicationAlerts()
         {
-            foreach (var medication in medications)
+            foreach (Medication medication in medications)
             {
-                foreach (var time in medication.Times)
+                foreach (DateTime time in medication.Times)
                 {
                     DateTime now = DateTime.Now;
                     DateTime medicationTime = new(now.Year, now.Month, now.Day, time.Hour, time.Minute, 0);
 
-                    //Kontrollera om det är dags att ta medicin
                     if (medicationTime <= now && medicationTime >= now.AddMinutes(-1))
                     {
                         if (lastAlertTime.ContainsKey(medication.Id))
@@ -68,12 +61,10 @@ namespace Medicinering
                             DateTime lastAlert = lastAlertTime[medication.Id];
                             if (lastAlert.Date == now.Date)
                             {
-                                //Redan tagen idag
                                 continue;
                             }
                         }
 
-                        // Kör alert
                         lastAlertTime[medication.Id] = now;
                         MessageBox.Show($"Dags att ta: {medication.Name} - {medication.Dosage}", "Påminnelse!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         medication.LogTaken(databaseManager);
@@ -86,8 +77,9 @@ namespace Medicinering
         {
             Form2 form2 = new(databaseManager);
             form2.ShowDialog();
-            LoadMedications();
+            UpdateMedicationList();
         }
+
         private void additionalInformation_Click(object sender, EventArgs e)
         {
             if (medicationList.SelectedItem == null)
@@ -117,7 +109,6 @@ namespace Medicinering
             if (confirmResult == DialogResult.Yes)
             {
                 databaseManager.DeleteMedication(selectedMedication.Id);
-                LoadMedications();
                 UpdateMedicationList();
             }
         }

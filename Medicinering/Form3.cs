@@ -14,6 +14,7 @@ namespace Medicinering
     {
         private List<LoggedMedication> loggedMedications;
         private DatabaseManager databaseManager;
+
         public Form3(DatabaseManager databaseManager)
         {
             this.databaseManager = databaseManager;

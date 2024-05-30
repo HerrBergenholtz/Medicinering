@@ -28,14 +28,7 @@ namespace Medicinering
             item.SubItems.Add(medication.Dosage);
             listView1.Items.Add(item);
 
-            if (medication.Regular)
-            {
-                textBox1.Text = string.Join(Environment.NewLine, medication.Times.Select(t => t.ToString().Split(" ")[1]));
-            }
-            else
-            {
-                textBox1.Text = string.Join(Environment.NewLine, medication.Times.Select(t => t.ToString()));
-            }
+            textBox1.Text = string.Join(Environment.NewLine, medication.Times.Select(t => t.ToString().Split(" ")[1]));
         }
 
         private void closeForm_Click(object sender, EventArgs e)

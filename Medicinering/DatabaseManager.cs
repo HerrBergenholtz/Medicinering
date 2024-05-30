@@ -22,8 +22,7 @@ public class DatabaseManager
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT,
                     Dosage TEXT,
-                    Times TEXT,
-                    Regular BOOLEAN
+                    Times TEXT
                 )";
             string createLogsTable = @"
                 CREATE TABLE IF NOT EXISTS Logs (
@@ -51,13 +50,13 @@ public class DatabaseManager
         using (SQLiteConnection connection = new(connectionString))
         {
             connection.Open();
-            string query = "INSERT INTO Medications (Name, Dosage, Times, Regular) VALUES (@Name, @Dosage, @Times, @Regular)";
+            string query = "INSERT INTO Medications (Name, Dosage, Times) VALUES (@Name, @Dosage, @Times)";
+
             using (SQLiteCommand command = new(query, connection))
             {
                 command.Parameters.AddWithValue("@Name", medication.Name);
                 command.Parameters.AddWithValue("@Dosage", medication.Dosage);
                 command.Parameters.AddWithValue("@Times", string.Join(",", medication.Times));
-                command.Parameters.AddWithValue("@Regular", medication.Regular);
                 command.ExecuteNonQuery();
             }
         }
@@ -78,13 +77,12 @@ public class DatabaseManager
                     while (reader.Read())
                     {
                         Medication medication = new(
-                            reader.GetString(1),//Namn
-                            reader.GetString(2),//Dos
-                            reader.GetString(3).Split(',').Select(t => DateTime.Parse(t)).ToList(), //Tider
-                            reader.GetBoolean(4) // Regular
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3).Split(',').Select(t => DateTime.Parse(t)).ToList()
                         )
                         {
-                            Id = reader.GetInt32(0) // Id
+                            Id = reader.GetInt32(0)
                         };
                         medications.Add(medication);
                     }
